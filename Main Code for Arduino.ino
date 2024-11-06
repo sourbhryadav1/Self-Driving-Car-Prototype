@@ -1,6 +1,6 @@
 int i =0;
 int j =0;
-   
+// Use 6 pin H-Bridge to connect to these motors  --L298 model
 const int EnableL = 5;
 const int HighL = 6;       // LEFT SIDE MOTOR
 const int LowL =7;
@@ -43,14 +43,14 @@ void Data()
    c = digitalRead(D2);
    d = digitalRead(D3);
 
-   data = 8*d+4*c+2*b+a;
+   data = 8*d+4*c+2*b+a;  // Data which will be given by raspberrypi
 }
 
 void Forward()
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
+  analogWrite(EnableL,255);   // Max speed of motors is 255
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
@@ -120,7 +120,8 @@ void Left3()
   
 }
 
-void Right1()
+// Can varry speed to move slower or faster in particular directipon
+void Right1()                          // Fast
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
@@ -128,10 +129,22 @@ void Right1()
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,160);  //200
+  analogWrite(EnableR,160);  
+  
+}  
+void Right2()                       // Slower
+{
+  digitalWrite(HighL, LOW);
+  digitalWrite(LowL, HIGH);
+  analogWrite(EnableL,255);
+
+  digitalWrite(HighR, LOW);
+  digitalWrite(LowR, HIGH);
+  analogWrite(EnableR,90);   /
   
 }
-void Right2()
+
+void Right3()                     // More slower
 {
   digitalWrite(HighL, LOW);
   digitalWrite(LowL, HIGH);
@@ -139,19 +152,7 @@ void Right2()
 
   digitalWrite(HighR, LOW);
   digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,90);   //160
-  
-}
-
-void Right3()
-{
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,255);
-
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,50);   //100
+  analogWrite(EnableR,50);   
   
 }
 
