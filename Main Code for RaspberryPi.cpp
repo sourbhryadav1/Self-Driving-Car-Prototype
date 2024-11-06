@@ -1,5 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include <raspicam_cv.h>
 #include <iostream>
 #include <chrono>
 #include <ctime>
@@ -7,40 +6,44 @@
 
 using namespace std;
 using namespace cv;
-using namespace raspicam;
 
 // Image Processing variables
 Mat frame, Matrix, framePers, frameGray, frameThresh, frameEdge, frameFinal, frameFinalDuplicate, frameFinalDuplicate1;
 Mat ROILane, ROILaneEnd;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result, laneEnd;
 
-RaspiCam_Cv Camera;   // Use videoCapture Module if you are using external WEBCAM
+VideoCapture Camera;   // USe raspiCam_Cv if you are using picamera 
 
 stringstream ss;
-
 
 vector<int> histogramLane;
 vector<int> histogramLaneEnd;
 
-Point2f Source[] = {Point2f(40,135),Point2f(360,135),Point2f(0,185), Point2f(400,185)};
-Point2f Destination[] = {Point2f(100,0),Point2f(280,0),Point2f(100,240), Point2f(280,240)};
-
+Point2f Source[] = {Point2f(40,135), Point2f(360,135), Point2f(0,185), Point2f(400,185)};         // change these variables acc to your frame, this is to select your region of interest ROI
+Point2f Destination[] = {Point2f(100,0), Point2f(280,0), Point2f(100,240), Point2f(280,240)};     // same goes here , this is for slescting a particualr area of lanes from your ROI
 
 CascadeClassifier Stop_Cascade, Object_Cascade;
 Mat frame_Stop, RoI_Stop, gray_Stop, frame_Object, RoI_Object, gray_Object;
 vector<Rect> Stop, Object;
 int dist_Stop, dist_Object;
 
- void Setup ( int argc,char **argv, RaspiCam_Cv &Camera )
-  {
-    Camera.set ( CAP_PROP_FRAME_WIDTH,  ( "-w",argc,argv,400 ) );
-    Camera.set ( CAP_PROP_FRAME_HEIGHT,  ( "-h",argc,argv,240 ) );
-    Camera.set ( CAP_PROP_BRIGHTNESS, ( "-br",argc,argv,50 ) );
-    Camera.set ( CAP_PROP_CONTRAST ,( "-co",argc,argv,50 ) );
-    Camera.set ( CAP_PROP_SATURATION,  ( "-sa",argc,argv,50 ) );
-    Camera.set ( CAP_PROP_GAIN,  ( "-g",argc,argv ,50 ) );
-    Camera.set ( CAP_PROP_FPS,  ( "-fps",argc,argv,0));
 
+ 
+void Setup()
+{
+    Camera.open(0); // Open the default camera (webcam)
+    if (!Camera.isOpened())
+    {
+        cerr << "Error: Could not open the camera." << endl;
+        exit(1);
+    }
+    Camera.set(CAP_PROP_FRAME_WIDTH, 400);
+    Camera.set(CAP_PROP_FRAME_HEIGHT, 240);
+    Camera.set(CAP_PROP_BRIGHTNESS, 50);
+    Camera.set(CAP_PROP_CONTRAST, 50);
+    Camera.set(CAP_PROP_SATURATION, 50);
+    Camera.set(CAP_PROP_GAIN, 50);
+    Camera.set(CAP_PROP_FPS, 30);
 }
 
 void Capture()
@@ -72,8 +75,8 @@ void Threshold()
 	Canny(frameGray,frameEdge, 900, 900, 3, false);
 	add(frameThresh, frameEdge, frameFinal);
 	cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
-	cvtColor(frameFinal, frameFinalDuplicate, COLOR_RGB2BGR);   //used in histrogram function only
-	cvtColor(frameFinal, frameFinalDuplicate1, COLOR_RGB2BGR);   //used in histrogram function only
+	cvtColor(frameFinal, frameFinalDuplicate, COLOR_RGB2BGR);   //used in histogram function only
+	cvtColor(frameFinal, frameFinalDuplicate1, COLOR_RGB2BGR);   //used in histogram function only
 	
 }
 
@@ -195,7 +198,7 @@ int main(int argc,char **argv)
 {
 	
     wiringPiSetup();
-    pinMode(21, OUTPUT);
+    pinMode(21, OUTPUT);       // gpio pins of raspberryPi 3 model B  -- connected to 1,2,3,4 pins of arduino
     pinMode(22, OUTPUT);
     pinMode(23, OUTPUT);
     pinMode(24, OUTPUT);
@@ -406,3 +409,5 @@ int main(int argc,char **argv)
     return 0;
      
 }
+
+// still you can google or go for youtube tutorials
