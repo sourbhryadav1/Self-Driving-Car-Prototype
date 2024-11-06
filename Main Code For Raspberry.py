@@ -1,3 +1,5 @@
+# this code is only for raspberryPi as windows do not support some libraries whiich are mentioned below
+
 import cv2
 import numpy as np
 import time
@@ -187,8 +189,66 @@ def main():
             GPIO.output(23, GPIO.LOW)
             GPIO.output(24, GPIO.LOW)
             print("Move Forward")
-        
-        # Further logic for right/left turns can be handled similarly
+            
+    # Right turn logic
+    if 0 < Result < 10:
+        GPIO.output(21, GPIO.HIGH)
+        GPIO.output(22, GPIO.LOW)
+        GPIO.output(23, GPIO.LOW)
+        GPIO.output(24, GPIO.LOW)
+        print("Right1")
+    elif 10 <= Result < 20:
+        GPIO.output(21, GPIO.LOW)
+        GPIO.output(22, GPIO.HIGH)
+        GPIO.output(23, GPIO.LOW)
+        GPIO.output(24, GPIO.LOW)
+        print("Right2")
+    elif Result >= 20:
+        GPIO.output(21, GPIO.HIGH)
+        GPIO.output(22, GPIO.HIGH)
+        GPIO.output(23, GPIO.LOW)
+        GPIO.output(24, GPIO.LOW)
+        print("Right3")
+
+    # Left turn logic
+    elif -10 < Result < 0:
+        GPIO.output(21, GPIO.LOW)
+        GPIO.output(22, GPIO.LOW)
+        GPIO.output(23, GPIO.HIGH)
+        GPIO.output(24, GPIO.LOW)
+        print("Left1")
+    elif -20 < Result <= -10:
+        GPIO.output(21, GPIO.HIGH)
+        GPIO.output(22, GPIO.LOW)
+        GPIO.output(23, GPIO.HIGH)
+        GPIO.output(24, GPIO.LOW)
+        print("Left2")
+    elif Result <= -20:
+        GPIO.output(21, GPIO.LOW)
+        GPIO.output(22, GPIO.HIGH)
+        GPIO.output(23, GPIO.HIGH)
+        GPIO.output(24, GPIO.LOW)
+        print("Left3")
+
+    # Lane End Detection
+    if laneEnd > 3000:
+        print("Lane End")
+        # frame.putText("Lane End", (1, 50), font, scale, (255, 0, 0), 2)
+
+    # Move Forward logic
+    elif Result == 0:
+        print(f"Result = {Result} (Move Forward)")
+        # frame.putText(f"Result = {Result} (Move Forward)", (1, 50), font, scale, (0, 0, 255), 2)
+
+    # Move Right logic
+    elif Result > 0:
+        print(f"Result = {Result} (Move Right)")
+        # frame.putText(f"Result = {Result} (Move Right)", (1, 50), font, scale, (0, 0, 255), 2)
+
+    # Move Left logic
+    elif Result < 0:
+        print(f"Result = {Result} (Move Left)")
+        # frame.putText(f"Result = {Result} (Move Left)", (1, 50), font, scale, (0, 0, 255), 2)
         
         # Display images
         cv2.imshow("Original", frame)
