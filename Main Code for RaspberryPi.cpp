@@ -14,19 +14,18 @@ Mat frame, Matrix, framePers, frameGray, frameThresh, frameEdge, frameFinal, fra
 Mat ROILane, ROILaneEnd;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result, laneEnd;
 
-RaspiCam_Cv Camera;
+RaspiCam_Cv Camera;   // Use videoCapture Module if you are using external WEBCAM
 
 stringstream ss;
 
 
-vector<int> histrogramLane;
-vector<int> histrogramLaneEnd;
+vector<int> histogramLane;
+vector<int> histogramLaneEnd;
 
 Point2f Source[] = {Point2f(40,135),Point2f(360,135),Point2f(0,185), Point2f(400,185)};
 Point2f Destination[] = {Point2f(100,0),Point2f(280,0),Point2f(100,240), Point2f(280,240)};
 
 
-//Machine Learning variables
 CascadeClassifier Stop_Cascade, Object_Cascade;
 Mat frame_Stop, RoI_Stop, gray_Stop, frame_Object, RoI_Object, gray_Object;
 vector<Rect> Stop, Object;
@@ -78,41 +77,41 @@ void Threshold()
 	
 }
 
-void Histrogram()
+void Histogram()
 {
-    histrogramLane.resize(400);
-    histrogramLane.clear();
+    histogramLane.resize(400);
+    histogramLane.clear();
     
     for(int i=0; i<400; i++)       //frame.size().width = 400
     {
 	ROILane = frameFinalDuplicate(Rect(i,140,1,100));
 	divide(255, ROILane, ROILane);
-	histrogramLane.push_back((int)(sum(ROILane)[0])); 
+	histogramLane.push_back((int)(sum(ROILane)[0])); 
     }
 	
-	histrogramLaneEnd.resize(400);
-        histrogramLaneEnd.clear();
+	histogramLaneEnd.resize(400);
+        histogramLaneEnd.clear();
 	for (int i = 0; i < 400; i++)       
 	{
 		ROILaneEnd = frameFinalDuplicate1(Rect(i, 0, 1, 240));   
 		divide(255, ROILaneEnd, ROILaneEnd);       
-		histrogramLaneEnd.push_back((int)(sum(ROILaneEnd)[0]));  
+		histogramLaneEnd.push_back((int)(sum(ROILaneEnd)[0]));  
 		
 	
 	}
-	   laneEnd = sum(histrogramLaneEnd)[0];
+	   laneEnd = sum(histogramLaneEnd)[0];
 	   cout<<"Lane END = "<<laneEnd<<endl;
 }
 
 void LaneFinder()
 {
     vector<int>:: iterator LeftPtr;
-    LeftPtr = max_element(histrogramLane.begin(), histrogramLane.begin() + 150);
-    LeftLanePos = distance(histrogramLane.begin(), LeftPtr); 
+    LeftPtr = max_element(histogramLane.begin(), histogramLane.begin() + 150);
+    LeftLanePos = distance(histogramLane.begin(), LeftPtr); 
     
     vector<int>:: iterator RightPtr;
-    RightPtr = max_element(histrogramLane.begin() +250, histrogramLane.end());
-    RightLanePos = distance(histrogramLane.begin(), RightPtr);
+    RightPtr = max_element(histogramLane.begin() +250, histogramLane.end());
+    RightLanePos = distance(histogramLane.begin(), RightPtr);
     
     line(frameFinal, Point2f(LeftLanePos, 0), Point2f(LeftLanePos, 240), Scalar(0, 255,0), 2);
     line(frameFinal, Point2f(RightLanePos, 0), Point2f(RightLanePos, 240), Scalar(0,255,0), 2); 
@@ -132,7 +131,7 @@ void LaneCenter()
 
 void Stop_detection()
 {
-    if(!Stop_Cascade.load("//home//pi//Desktop//MACHINE LEARNING//Stop_cascade.xml"))
+    if(!Stop_Cascade.load("//home//pi//Desktop//MACHINE_LEARNING//Stop_cascade.xml"))  // this stop cascade file consist of trained data for styop detection , you can use more faster methods as it was processsing slower or you can go for yoputube tutorials
     {
 	printf("Unable to open stop cascade file");
     }
@@ -144,8 +143,8 @@ void Stop_detection()
     
     for(int i=0; i<Stop.size(); i++)
     {
-	Point P1(Stop[i].x, Stop[i].y);
-	Point P2(Stop[i].x + Stop[i].width, Stop[i].y + Stop[i].height);
+	Point P1(Stop[i].x, Stop[i].y);                                                       // p1 , p2 arre the end points of the stop sign   
+	Point P2(Stop[i].x + Stop[i].width, Stop[i].y + Stop[i].height);                   
 	
 	rectangle(RoI_Stop, P1, P2, Scalar(0, 0, 255), 2);
 	putText(RoI_Stop, "Stop Sign", P1, FONT_HERSHEY_PLAIN, 1,  Scalar(0, 0, 255, 255), 2);
@@ -163,7 +162,7 @@ void Stop_detection()
 
 void Object_detection()
 {
-    if(!Object_Cascade.load("//home//pi//Desktop//MACHINE LEARNING//Object_cascade.xml"))
+    if(!Object_Cascade.load("//home//pi//Desktop//MACHINE_LEARNING//Object_cascade.xml"))
     {
 	printf("Unable to open Object cascade file");
     }
@@ -220,7 +219,7 @@ int main(int argc,char **argv)
     Capture();
     Perspective();
     Threshold();
-    Histrogram();
+    Histogram();
     LaneFinder();
     LaneCenter();
     Stop_detection();
@@ -399,7 +398,7 @@ int main(int argc,char **argv)
     
     float t = elapsed_seconds.count();
     int FPS = 1/t;
-    //cout<<"FPS = "<<FPS<<endl;
+    cout<<"FPS = "<<FPS<<endl;
     
     }
 
