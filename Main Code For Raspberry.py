@@ -1,3 +1,4 @@
+# HERE IS ATERNATE FOR THAT CPP CODE IN PYTHON
 # this code is only for raspberryPi as windows do not support some libraries whiich are mentioned below
 
 import cv2
