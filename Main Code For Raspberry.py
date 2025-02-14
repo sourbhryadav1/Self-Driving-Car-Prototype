@@ -1,4 +1,3 @@
-# HERE IS ATERNATE FOR THAT CPP CODE IN PYTHON
 # this code is only for raspberryPi as windows do not support some libraries whiich are mentioned below
 
 import cv2
@@ -7,21 +6,10 @@ import time
 import RPi.GPIO as GPIO
 
 # Image Processing variables
-frame = None
-Matrix = None
-framePers = None
-frameGray = None
-frameThresh = None
-frameEdge = None
-frameFinal = None
-frameFinalDuplicate = None
-frameFinalDuplicate1 = None
-ROILane = None
-ROILaneEnd = None
-LeftLanePos = RightLanePos = frameCenter = laneCenter = Result = laneEnd = 0
-
-histogramLane = []
-histogramLaneEnd = []
+frame, framePers, frameGray, frameThresh, frameEdge, frameFinal = [None] * 6
+frameFinalDuplicate, frameFinalDuplicate1, ROILane, ROILaneEnd = [None] * 4
+LeftLanePos, RightLanePos, frameCenter, laneCenter, Result, laneEnd = [0] * 6
+histogramLane, histogramLaneEnd = [], []
 
 # Define Source and Destination points for perspective transform
 Source = np.array([[40, 135], [360, 135], [0, 185], [400, 185]], dtype='float32')
@@ -35,22 +23,28 @@ GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 
 # Initialize the Cascade Classifiers
-Stop_Cascade = cv2.CascadeClassifier('//home//pi//Desktop//MACHINE_LEARNING//Stop_cascade.xml')
-Object_Cascade = cv2.CascadeClassifier('//home//pi//Desktop//MACHINE_LEARNING//Object_cascade.xml')
+Stop_Cascade = cv2.CascadeClassifier('/home/pi/Desktop/MACHINE_LEARNING/Stop_cascade.xml')
+Object_Cascade = cv2.CascadeClassifier('/home//pi/Desktop/MACHINE_LEARNING/Object_cascade.xml')
 
+# Camera Setup
 def Setup():
     global Camera
-    Camera = cv2.VideoCapture(0)  # Open the default camera (webcam)
+    Camera = cv2.VideoCapture(0)
     if not Camera.isOpened():
         print("Error: Could not open the camera.")
         exit(1)
-    Camera.set(cv2.CAP_PROP_FRAME_WIDTH, 400)
-    Camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
-    Camera.set(cv2.CAP_PROP_BRIGHTNESS, 50)
-    Camera.set(cv2.CAP_PROP_CONTRAST, 50)
-    Camera.set(cv2.CAP_PROP_SATURATION, 50)
-    Camera.set(cv2.CAP_PROP_GAIN, 50)
-    Camera.set(cv2.CAP_PROP_FPS, 30)
+    
+    settings = {
+        cv2.CAP_PROP_FRAME_WIDTH: 400,
+        cv2.CAP_PROP_FRAME_HEIGHT: 240,
+        cv2.CAP_PROP_BRIGHTNESS: 50,
+        cv2.CAP_PROP_CONTRAST: 50,
+        cv2.CAP_PROP_SATURATION: 50,
+        cv2.CAP_PROP_GAIN: 50,
+        cv2.CAP_PROP_FPS: 30
+    }
+    for prop, value in settings.items():
+        Camera.set(prop, value)
 
 def Capture():
     global frame
