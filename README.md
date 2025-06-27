@@ -10,8 +10,8 @@ This repository contains the code for a self-driving car project utilizing both 
 ## Installation, Usage & Additional Information
 ```sh
 # Clone the Repository
-git clone https://github.com/yourusername/self-driving-car.git
-cd self-driving-car
+git clone https://github.com/sourbhryadav1/Self-Driving-Car-Prototype.git
+cd Self_Driving-Car-Prototype
 
 # Upload the Arduino code
 # 1. Open `Main Code for Arduino.ino` in Arduino IDE.
